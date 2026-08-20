@@ -1,5 +1,5 @@
 <p-confirmDialog></p-confirmDialog>
-
+<input #fileInput type="file" accept=".xlsx, .xls" style="display: none" (change)="onFileSelected($event)" />
 <div class="modern-table-card" dir="rtl">
   <p-table
     [value]="products"
@@ -8,13 +8,35 @@
     [rows]="rows"
     [rowsPerPageOptions]="rowsPerPageOptions"
     [showCurrentPageReport]="true"
+    [styleClass]="'custom-table'"
     currentPageReportTemplate="نمایش {first} تا {last} از {totalRecords} مورد"
     [tableStyle]="{ 'min-width': '65rem' }">
 
     <!-- Modern Caption Form -->
     <ng-template pTemplate="caption">
       <div class="caption-wrapper">
-        <h3 class="caption-title">افزودن آیتم جدید</h3>
+        <div class="caption-header-actions">
+<!--          <h3 class="caption-title">مدیریت اطلاعات</h3>-->
+
+          <!-- Excel Actions Group -->
+          <div class="excel-actions">
+            <p-button
+              label="دانلود قالب اکسل"
+              icon="pi pi-download"
+              severity="secondary"
+              [outlined]="true"
+              (click)="downloadTemplate()">
+            </p-button>
+
+            <p-button
+              label="ورود از اکسل"
+              icon="pi pi-upload"
+              severity="help"
+              (click)="fileInput.click()">
+            </p-button>
+          </div>
+        </div>
+        <h3 class="caption-title">افزودن اطلاعات جدید</h3>
         <form [formGroup]="addRowForm" (ngSubmit)="onAddRow()" class="add-row-grid">
 
           <!-- Name -->
@@ -73,11 +95,11 @@
     <!-- Header -->
     <ng-template pTemplate="header">
       <tr>
-        <th style="width: 25%">نام (متن)</th>
-        <th style="width: 15%">سن (عدد)</th>
-        <th style="width: 20%">وضعیت (انتخاب)</th>
-        <th style="width: 25%">تاریخ تولد (شمسی)</th>
-        <th style="width: 15%; text-align: center;">عملیات</th>
+        <th style="width: 24%">نام (متن)</th>
+        <th style="width: 24%">سن (عدد)</th>
+        <th style="width: 24%">وضعیت (انتخاب)</th>
+        <th style="width: 24%">تاریخ تولد</th>
+        <th style="width: 4%; text-align: center;">عملیات</th>
       </tr>
     </ng-template>
 
@@ -146,7 +168,7 @@
           <p-cellEditor>
             <ng-template pTemplate="input">
               <form [formGroup]="editForm" class="cell-editor-form">
-                <p-datePicker appendTo="body" formControlName="birthDate" [showIcon]="true"
+                <p-datePicker appendTo="body" [panelStyleClass]="'custom-date-picker'" formControlName="birthDate" [showIcon]="true"
                               (onSelect)="onEditSave(product, 'birthDate')"
                               (onBlur)="onEditSave(product, 'birthDate')"></p-datePicker>
                 <div class="error-container"

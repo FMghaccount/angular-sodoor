@@ -48,7 +48,7 @@
   margin: 0 0 1rem 0;
   font-size: 1.1rem;
   font-weight: 600;
-  color: #0f172a;
+  color: var(--p-content-color, inherit);
 }
 
 .add-row-grid {
@@ -136,5 +136,167 @@
 @media (max-width: 992px) {
   .add-row-grid {
     grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.excel-actions{
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+:host {
+  display: block;
+  width: 100%;
+}
+
+.modern-table-card {
+  // Uses PrimeNG native content background and border tokens
+  background-color: var(--p-content-background, var(--p-surface-0, #ffffff));
+  color: var(--p-content-color, inherit);
+  border: 1px solid var(--p-content-border-color, var(--p-surface-200, #e5e7eb));
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+
+  ::ng-deep .p-datatable {
+    // Force native datatable transparent backgrounds to inherit host card color
+    .p-datatable-header,
+    .p-datatable-thead > tr > th,
+    .p-datatable-tbody > tr > td,
+    .p-datatable-tfoot > tr > td,
+    .p-paginator {
+      background-color: transparent;
+      color: var(--p-content-color, inherit);
+      border-color: var(--p-content-border-color, var(--p-surface-200, #e5e7eb));
+    }
+
+    .p-datatable-tbody > tr {
+      background-color: transparent;
+      color: var(--p-content-color, inherit);
+
+      &:hover {
+        background-color: var(--p-datatable-row-hover-background, rgba(255, 255, 255, 0.04));
+      }
+    }
+  }
+}
+
+/* Caption Header Styling - Matches PrimeNG Table Header Surface */
+.caption-wrapper {
+  background-color: var(
+    --p-datatable-header-cell-background,
+    var(--p-surface-100, var(--p-surface-800, #f9fafb))
+  );
+  color: var(--p-content-color, inherit);
+  border: 1px solid var(--p-content-border-color, var(--p-surface-200, #e5e7eb));
+  border-radius: 8px;
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+
+  .caption-header-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+
+    .caption-title {
+      margin: 0;
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--p-content-color, inherit);
+    }
+
+    .excel-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+  }
+
+  .add-row-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+    align-items: start;
+
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+
+      input,
+      p-inputnumber,
+      p-select,
+      p-datepicker {
+        width: 100%;
+      }
+
+      &.button-group {
+        align-self: baseline;
+      }
+    }
+  }
+}
+
+/* Footer Section - Matches PrimeNG Table Footer Surface */
+.footer-cell {
+  background-color: var(
+    --p-datatable-footer-cell-background,
+    var(--p-surface-100, var(--p-surface-800, #f9fafb))
+  ) !important;
+  color: var(--p-content-color, inherit) !important;
+  border-top: 1px solid var(--p-content-border-color, var(--p-surface-200, #e5e7eb)) !important;
+  padding: 1rem !important;
+  text-align: right;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+
+/* Cell Editors & Form Controls */
+.cell-editor-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  width: 100%;
+
+  input,
+  p-inputnumber,
+  p-select,
+  p-datepicker {
+    width: 100%;
+  }
+}
+
+.error-container {
+  .error-text {
+    color: var(--p-red-500, #ef4444);
+    font-size: 0.75rem;
+  }
+}
+
+/* Status Badges */
+.status-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: inline-block;
+
+  &.active {
+    background-color: rgba(34, 197, 94, 0.15);
+    color: var(--p-green-500, #22c55e);
+  }
+
+  &.pending {
+    background-color: rgba(234, 179, 8, 0.15);
+    color: var(--p-yellow-500, #eab308);
+  }
+
+  &.inactive {
+    background-color: rgba(239, 68, 68, 0.15);
+    color: var(--p-red-500, #ef4444);
   }
 }
