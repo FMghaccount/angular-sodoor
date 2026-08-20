@@ -1,0 +1,140 @@
+/* Keep cell bounds stable */
+:host ::ng-deep .p-datatable-tbody > tr > td {
+  position: relative !important;
+  overflow: visible !important;
+}
+
+/* Force absolute floating overlay for ng-persian-datepicker */
+:host ::ng-deep ng-persian-datepicker {
+  position: relative;
+  display: block;
+  width: 100%;
+}
+
+:host ::ng-deep ng-persian-datepicker .datepicker-outer-container {
+  position: absolute !important;
+  z-index: 9999 !important;
+  top: 100% !important;
+  right: 0 !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15) !important;
+}
+
+.custom-table{
+  table{
+    table-layout: fixed;
+  }
+}
+/* Card Wrapper & RTL */
+.modern-table-card {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+  padding: 1.5rem;
+  border: 1px solid #e2e8f0;
+  text-align: right;
+  direction: rtl;
+}
+
+/* Caption Header & Form */
+.caption-wrapper {
+  background-color: #f8fafc;
+  border: 1px solid #f1f5f9;
+  border-radius: 10px;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.caption-title {
+  margin: 0 0 1rem 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.add-row-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr) auto;
+  gap: 1rem;
+  align-items: start;
+}
+
+.field-group {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.field-group input,
+.field-group p-inputnumber,
+.field-group p-select,
+.field-group ng-persian-datepicker {
+  width: 100%;
+}
+
+.button-group {
+  justify-content: flex-start;
+}
+
+/* RTL Headers & Cells Alignment */
+:host ::ng-deep .p-datatable .p-datatable-thead > tr > th,
+:host ::ng-deep .p-datatable .p-datatable-tbody > tr > td {
+  text-align: right;
+}
+
+:host ::ng-deep .p-datatable .p-datatable-thead > tr > th:last-child,
+:host ::ng-deep .p-datatable .p-datatable-tbody > tr > td:last-child {
+  text-align: center;
+}
+
+/* Red Error Messaging */
+.error-container {
+  display: flex;
+  margin-top: 0.25rem;
+  text-align: right;
+}
+
+.error-text {
+  color: #dc2626;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+/* Highlight components when invalid */
+:host ::ng-deep .ng-invalid.ng-dirty .p-inputtext,
+:host ::ng-deep .ng-invalid.ng-dirty .p-select {
+  border-color: #dc2626 !important;
+}
+
+/* Cell Editor Form */
+.cell-editor-form {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+/* Status Badges */
+.status-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: inline-block;
+}
+
+.status-badge.active { background-color: #dcfce7; color: #15803d; }
+.status-badge.pending { background-color: #fef9c3; color: #a16207; }
+.status-badge.inactive { background-color: #fee2e2; color: #b91c1c; }
+
+/* Table Footer Button Area */
+.footer-cell {
+  text-align: left !important;
+  padding: 1rem !important;
+  background-color: #f8fafc;
+}
+
+/* Responsive Grid */
+@media (max-width: 992px) {
+  .add-row-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

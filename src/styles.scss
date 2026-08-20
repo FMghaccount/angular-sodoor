@@ -1,1 +1,20 @@
 /* You can add global styles to this file, and also import other style files */
+@import "primeicons/primeicons.css";
+@import "tailwindcss";
+@import "./assets/scss/font/iran-yekan";
+
+body {
+  direction: rtl;
+  font-family: "iranYekan";
+}
+
+.p-datatable-header:has(.caption-wrapper){
+  padding: 0 !important;
+}
+
+.p-custom-select-overlay {
+  direction: ltr;
+  .p-select-list {
+    direction: rtl;
+  }
+}
