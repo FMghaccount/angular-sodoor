@@ -66,7 +66,7 @@
       [rowsPerPageOptions]="rowsPerPageOptions"
       [showCurrentPageReport]="true"
       [styleClass]="'custom-table'"
-      scrollHeight="65vh"
+      scrollHeight="45vh"
       currentPageReportTemplate="نمایش {first} تا {last} از {totalRecords} مورد"
       [tableStyle]="{ 'min-width': '65rem' }">
 
@@ -263,7 +263,11 @@
           </td>
         </tr>
       </ng-template>
-
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="5">اطلاعاتی یافت نشد.</td>
+        </tr>
+      </ng-template>
     </p-table>
   </div>
 </div>

@@ -41,7 +41,6 @@ interface RowData {
     ButtonModule,
     DatePickerModule,
     ConfirmDialogModule,
-    TreeSelect,
     CustomTreeSelectComponent
   ],
   providers: [ConfirmationService],
@@ -217,21 +216,6 @@ export class TableEditComponent implements OnInit {
     });
   }
 
-  private getValidatorsForField(field: string) {
-    switch (field) {
-      case 'name':
-        return [Validators.required, Validators.minLength(3)];
-      case 'age':
-        return [Validators.required, Validators.min(18), Validators.max(100)];
-      case 'status':
-        return [Validators.required];
-      case 'birthDate':
-        return [Validators.required];
-      default:
-        return [];
-    }
-  }
-
   onEditSave(row: RowData, field: keyof RowData): void {
     const control = this.editForm.get(field);
     if (control && control.valid) {
@@ -279,15 +263,14 @@ export class TableEditComponent implements OnInit {
     }));
 
     // Array output containing parent form data and table array
-    const resultPayload = [
-      {
-        parent: this.parentForm.value,
-        data: exportedTableData
-      }
-    ];
+    const resultPayload = {
+      parent: this.parentForm.value,
+      data: exportedTableData
+    };
     this.parentForm.reset();
     this.addRowForm.reset();
-    this.editForm.reset();
+    if (this.editForm) this.editForm.reset();
+    this.products = []
     console.log('Final Payload Output:', resultPayload);
   }
 
@@ -299,6 +282,21 @@ export class TableEditComponent implements OnInit {
   getStatusLabel(statusValue: string): string {
     const option = this.statusOptions.find((opt) => opt.value === statusValue);
     return option ? option.label : statusValue;
+  }
+
+  private getValidatorsForField(field: string) {
+    switch (field) {
+      case 'name':
+        return [Validators.required, Validators.minLength(3)];
+      case 'age':
+        return [Validators.required, Validators.min(18), Validators.max(100)];
+      case 'status':
+        return [Validators.required];
+      case 'birthDate':
+        return [Validators.required];
+      default:
+        return [];
+    }
   }
 
   // --- ACCURATE DATE PARSER ---
