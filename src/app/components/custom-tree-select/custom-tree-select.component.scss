@@ -24,8 +24,8 @@
 
   .selected-text {
     color: var(--p-content-color, inherit);
-    font-weight: 500;
   }
+
   .placeholder-text {
     color: var(--p-inputtext-color);
   }
@@ -33,7 +33,10 @@
   .dropdown-icon {
     color: var(--p-text-muted-color, #64748b);
     transition: transform 0.2s ease;
-    &.rotated { transform: rotate(180deg); }
+
+    &.rotated {
+      transform: rotate(180deg);
+    }
   }
 }
 
@@ -80,9 +83,8 @@
     }
 
     &.selected {
-      background-color: var(--p-highlight-background, rgba(59, 130, 246, 0.12));
-      color: var(--p-primary-color, #3b82f6);
-      font-weight: 600;
+      background: var(--p-select-option-selected-focus-background);
+      color: var(--p-select-option-selected-focus-color);
     }
 
     .toggler-wrapper {
@@ -139,7 +141,7 @@
       top: -5px;
       bottom: -5px;
       right: -10px; // Extends rightward to overlap the parent item
-      width: 15px;  // Covers the gap completely
+      width: 15px; // Covers the gap completely
       background: transparent;
     }
   }
