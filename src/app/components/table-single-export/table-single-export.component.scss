@@ -1,0 +1,23 @@
+:host {
+  display: block;
+  direction: rtl;
+  text-align: right;
+}
+
+.gap-2 { gap: 0.5rem; }
+.gap-3 { gap: 1rem; }
+
+/* Restricts PrimeNG Loading Mask Strictly To Table Bounds */
+::ng-deep .p-datatable {
+  position: relative !important;
+}
+
+::ng-deep .p-datatable-loading-overlay {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  z-index: 10 !important;
+  background: rgba(255, 255, 255, 0.6) !important;
+}

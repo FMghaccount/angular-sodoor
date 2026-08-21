@@ -1,0 +1,129 @@
+<div class="card p-4" dir="rtl">
+  <p-table
+    #dt
+    [value]="data"
+    [lazy]="true"
+    (onLazyLoad)="loadDataLazy($event)"
+    [totalRecords]="totalRecords"
+    [loading]="loading"
+    [paginator]="true"
+    [rows]="10"
+    [rowsPerPageOptions]="[10, 25, 50]"
+    selectionMode="single"
+    [(selection)]="selectedRow"
+    dataKey="id"
+    [columns]="selectedColumns"
+    styleClass="p-datatable-gridlines p-datatable-striped"
+  >
+    <!-- Table Caption Header -->
+    <ng-template pTemplate="caption">
+      <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center gap-3">
+
+        <!-- Global Search & Reset Controls -->
+        <div class="flex align-items-center gap-2">
+          <p-iconField iconPosition="left">
+            <p-inputIcon styleClass="pi pi-search"></p-inputIcon>
+            <input
+              pInputText
+              type="text"
+              [(ngModel)]="globalFilterValue"
+              (input)="onGlobalFilter(dt, $event)"
+              placeholder="جستجوی عمومی..."
+            />
+          </p-iconField>
+
+          <button
+            pButton
+            label="پاک‌سازی"
+            class="p-button-outlined"
+            icon="pi pi-filter-slash"
+            (click)="clearTable(dt)"
+          ></button>
+        </div>
+
+        <!-- Column MultiSelect & Single Excel Download -->
+        <div class="flex align-items-center gap-2">
+          <p-multiSelect
+            [options]="cols"
+            [(ngModel)]="selectedColumns"
+            optionLabel="header"
+            selectedItemsLabel="{0} ستون انتخاب شده"
+            [style]="{ 'min-width': '200px' }"
+            placeholder="انتخاب ستون‌ها"
+          ></p-multiSelect>
+
+          <button
+            pButton
+            label="دانلود اکسل ردیف انتخاب‌شده"
+            icon="pi pi-file-excel"
+            class="p-button-success"
+            [disabled]="!selectedRow"
+            (click)="downloadSelectedAsExcel()"
+          ></button>
+        </div>
+
+      </div>
+    </ng-template>
+
+    <!-- Table Header with Advanced Filter Menus -->
+    <ng-template pTemplate="header" let-columns>
+      <tr>
+        <th style="width: 4rem"></th>
+        <th *ngFor="let col of columns" [pSortableColumn]="col.field">
+          <div class="flex justify-content-between align-items-center">
+            <span>{{ col.header }}</span>
+            <div class="flex align-items-center gap-1">
+              <p-sortIcon [field]="col.field"></p-sortIcon>
+
+              <!-- ADVANCED FILTER MENU -->
+              <p-columnFilter
+                [type]="col.type"
+                [field]="col.field"
+                display="menu"
+                [showMatchModes]="true"
+                [showOperator]="true"
+                [showAddButton]="true"
+              >
+                <!-- Custom Template for Numeric Inputs -->
+                <ng-template pTemplate="filter" let-value let-filter="filterCallback" *ngIf="col.type === 'numeric'">
+                  <p-inputNumber
+                    [ngModel]="value"
+                    (onInput)="filter($event.value)"
+                    placeholder="فیلتر عددی..."
+                  ></p-inputNumber>
+                </ng-template>
+              </p-columnFilter>
+            </div>
+          </div>
+        </th>
+      </tr>
+    </ng-template>
+
+    <!-- Table Body -->
+    <ng-template pTemplate="body" let-rowData let-columns="columns">
+      <tr [pSelectableRow]="rowData">
+        <td>
+          <p-tableRadioButton [value]="rowData"></p-tableRadioButton>
+        </td>
+        <td *ngFor="let col of columns">
+          <ng-container *ngIf="col.field === 'price'; else standardCell">
+            {{ rowData[col.field] | number }} تومان
+          </ng-container>
+
+          <ng-template #standardCell>
+            {{ rowData[col.field] }}
+          </ng-template>
+        </td>
+      </tr>
+    </ng-template>
+
+    <!-- Empty State Message -->
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td [attr.colspan]="(selectedColumns.length || 0) + 1" class="text-center p-4">
+          هیچ رکوردی یافت نشد.
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>
