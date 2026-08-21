@@ -97,8 +97,7 @@ export class TableEditComponent implements OnInit {
     }
   ];
 
-  isParsingExcel: boolean = false;
-  parsedData: any[] = [];
+  loading: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -170,7 +169,7 @@ export class TableEditComponent implements OnInit {
     const file = target.files?.[0];
     if (!file) return;
 
-    this.isParsingExcel = true; // Block UI locally without freezing browser thread
+    this.loading = true; // Block UI locally without freezing browser thread
 
     // Instantiate Web Worker
     const worker = new Worker(
@@ -180,7 +179,7 @@ export class TableEditComponent implements OnInit {
 
     // Receive processed results back from Worker
     worker.onmessage = ({ data }) => {
-      this.isParsingExcel = false;
+      this.loading = false;
 
       if (data.success) {
         this.products = [...data.products, ...this.products];
@@ -193,7 +192,7 @@ export class TableEditComponent implements OnInit {
     };
 
     worker.onerror = (err) => {
-      this.isParsingExcel = false;
+      this.loading = false;
       console.error('Worker error:', err);
       target.value = '';
       worker.terminate();

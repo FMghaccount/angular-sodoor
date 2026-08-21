@@ -62,6 +62,7 @@
       [value]="products"
       dataKey="id"
       [paginator]="true"
+      [loading]="loading"
       [rows]="rows"
       [rowsPerPageOptions]="rowsPerPageOptions"
       [showCurrentPageReport]="true"
@@ -155,9 +156,9 @@
       <!-- Header -->
       <ng-template pTemplate="header">
         <tr>
-          <th style="width: 24%">نام (متن)</th>
-          <th style="width: 24%">سن (عدد)</th>
-          <th style="width: 24%">وضعیت (انتخاب)</th>
+          <th style="width: 24%">نام</th>
+          <th style="width: 24%">سن</th>
+          <th style="width: 24%">وضعیت</th>
           <th style="width: 24%">تاریخ تولد</th>
           <th style="width: 4%; text-align: center;">عملیات</th>
         </tr>

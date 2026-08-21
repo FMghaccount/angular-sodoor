@@ -1,14 +1,14 @@
-import { Component, OnInit, inject, PLATFORM_ID, makeStateKey, TransferState } from '@angular/core';
-import { CommonModule, isPlatformServer } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { TableModule, TableLazyLoadEvent } from 'primeng/table';
-import { MultiSelectModule } from 'primeng/multiselect';
-import { InputTextModule } from 'primeng/inputtext';
-import { InputNumberModule } from 'primeng/inputnumber';
-import { ButtonModule } from 'primeng/button';
-import { IconFieldModule } from 'primeng/iconfield';
-import { InputIconModule } from 'primeng/inputicon';
-import { TooltipModule } from 'primeng/tooltip';
+import {Component, inject, makeStateKey, OnInit, PLATFORM_ID, TransferState} from '@angular/core';
+import {CommonModule, isPlatformServer} from '@angular/common';
+import {FormsModule} from '@angular/forms';
+import {TableLazyLoadEvent, TableModule} from 'primeng/table';
+import {MultiSelectModule} from 'primeng/multiselect';
+import {InputTextModule} from 'primeng/inputtext';
+import {InputNumberModule} from 'primeng/inputnumber';
+import {ButtonModule} from 'primeng/button';
+import {IconFieldModule} from 'primeng/iconfield';
+import {InputIconModule} from 'primeng/inputicon';
+import {TooltipModule} from 'primeng/tooltip';
 import * as XLSX from 'xlsx';
 
 export interface ColumnDef {
@@ -49,9 +49,6 @@ const SINGLE_TABLE_DATA_KEY = makeStateKey<{ data: ParentRowData[]; totalRecords
   styleUrls: ['./table-single-export.component.scss']
 })
 export class TableSingleExportComponent implements OnInit {
-  private platformId = inject(PLATFORM_ID);
-  private transferState = inject(TransferState);
-
   cols!: ColumnDef[];
   selectedColumns!: ColumnDef[];
   data: ParentRowData[] = [];
@@ -59,20 +56,21 @@ export class TableSingleExportComponent implements OnInit {
   totalRecords: number = 0;
   loading: boolean = true;
   globalFilterValue: string = '';
-
+  private platformId = inject(PLATFORM_ID);
+  private transferState = inject(TransferState);
   private mockDatabase: ParentRowData[] = [];
 
   ngOnInit(): void {
     // 1. Column Definitions
     this.cols = [
-      { field: 'id', header: 'شناسه', type: 'numeric' },
-      { field: 'code', header: 'کد محصول', type: 'text' },
-      { field: 'name', header: 'نام', type: 'text' },
-      { field: 'category', header: 'دسته‌بندی', type: 'text' },
-      { field: 'quantity', header: 'موجودی', type: 'numeric' },
-      { field: 'status', header: 'وضعیت', type: 'text' },
-      { field: 'price', header: 'قیمت', type: 'numeric' },
-      { field: 'createdDate', header: 'تاریخ ثبت', type: 'text' }
+      {field: 'id', header: 'شناسه', type: 'numeric'},
+      {field: 'code', header: 'کد محصول', type: 'text'},
+      {field: 'name', header: 'نام', type: 'text'},
+      {field: 'category', header: 'دسته‌بندی', type: 'text'},
+      {field: 'quantity', header: 'موجودی', type: 'numeric'},
+      {field: 'status', header: 'وضعیت', type: 'text'},
+      {field: 'price', header: 'قیمت', type: 'numeric'},
+      {field: 'createdDate', header: 'تاریخ ثبت', type: 'text'}
     ];
 
     this.selectedColumns = [...this.cols];
@@ -82,7 +80,7 @@ export class TableSingleExportComponent implements OnInit {
   // --- SSR Hydrated Lazy Data Loading ---
   loadDataLazy(event: TableLazyLoadEvent): void {
     if (this.transferState.hasKey(SINGLE_TABLE_DATA_KEY)) {
-      const cached = this.transferState.get(SINGLE_TABLE_DATA_KEY, { data: [], totalRecords: 0 });
+      const cached = this.transferState.get(SINGLE_TABLE_DATA_KEY, {data: [], totalRecords: 0});
       this.data = cached.data;
       this.totalRecords = cached.totalRecords;
       this.loading = false;
@@ -162,30 +160,6 @@ export class TableSingleExportComponent implements OnInit {
     }, 500);
   }
 
-  // --- Rule Match Evaluator ---
-  private evaluateFilterRule(itemValue: any, matchMode: string, filterValue: any): boolean {
-    if (itemValue === null || itemValue === undefined) return false;
-
-    const strItem = String(itemValue).toLowerCase();
-    const strFilter = String(filterValue).toLowerCase();
-    const numItem = Number(itemValue);
-    const numFilter = Number(filterValue);
-
-    switch (matchMode) {
-      case 'startsWith': return strItem.startsWith(strFilter);
-      case 'contains': return strItem.includes(strFilter);
-      case 'notContains': return !strItem.includes(strFilter);
-      case 'endsWith': return strItem.endsWith(strFilter);
-      case 'equals': return strItem === strFilter || numItem === numFilter;
-      case 'notEquals': return strItem !== strFilter && numItem !== numFilter;
-      case 'gt': return numItem > numFilter;
-      case 'gte': return numItem >= numFilter;
-      case 'lt': return numItem < numFilter;
-      case 'lte': return numItem <= numFilter;
-      default: return strItem.includes(strFilter);
-    }
-  }
-
   onGlobalFilter(table: any, event: Event): void {
     const value = (event.target as HTMLInputElement).value;
     this.globalFilterValue = value;
@@ -205,27 +179,73 @@ export class TableSingleExportComponent implements OnInit {
     const row = this.selectedRow;
 
     // Single Row Excel Dataset with Persian Headers
-    const excelRowData = [
-      {
-        'شناسه': row.id,
-        'کد محصول': row.code,
-        'نام': row.name,
-        'دسته‌بندی': row.category,
-        'موجودی': row.quantity,
-        'وضعیت': row.status,
-        'قیمت': row.price,
-        'تاریخ ثبت': row.createdDate
-      }
-    ];
+    const excelRowData: any = [];
+
+    // const items = Array.from({ length: 25000 }, (_, i) => i);
+    //
+    // items.forEach((_, i) => {
+    //   // excelRowData.push({
+    //   //   'نام': 'نمونه نام 1',
+    //   //   'سن': 20,
+    //   //   'وضعیت': 'فعال',
+    //   //   'تاریخ تولد': '6/10/1999',
+    //   // })
+    // })
+
+    excelRowData.push({
+      'شناسه': row.id,
+      'کد محصول': row.code,
+      'نام': row.name,
+      'دسته‌بندی': row.category,
+      'موجودی': row.quantity,
+      'وضعیت': row.status,
+      'قیمت': row.price,
+      'تاریخ ثبت': row.createdDate
+    })
 
     const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(excelRowData);
     const workbook: XLSX.WorkBook = {
-      Sheets: { 'داده_ردیف': worksheet },
+      Sheets: {'داده_ردیف': worksheet},
       SheetNames: ['داده_ردیف']
     };
 
     // Prompt Excel File Download Directly
     XLSX.writeFile(workbook, `ردیف_${row.id}_${row.code}.xlsx`);
+  }
+
+  // --- Rule Match Evaluator ---
+  private evaluateFilterRule(itemValue: any, matchMode: string, filterValue: any): boolean {
+    if (itemValue === null || itemValue === undefined) return false;
+
+    const strItem = String(itemValue).toLowerCase();
+    const strFilter = String(filterValue).toLowerCase();
+    const numItem = Number(itemValue);
+    const numFilter = Number(filterValue);
+
+    switch (matchMode) {
+      case 'startsWith':
+        return strItem.startsWith(strFilter);
+      case 'contains':
+        return strItem.includes(strFilter);
+      case 'notContains':
+        return !strItem.includes(strFilter);
+      case 'endsWith':
+        return strItem.endsWith(strFilter);
+      case 'equals':
+        return strItem === strFilter || numItem === numFilter;
+      case 'notEquals':
+        return strItem !== strFilter && numItem !== numFilter;
+      case 'gt':
+        return numItem > numFilter;
+      case 'gte':
+        return numItem >= numFilter;
+      case 'lt':
+        return numItem < numFilter;
+      case 'lte':
+        return numItem <= numFilter;
+      default:
+        return strItem.includes(strFilter);
+    }
   }
 
   // --- Persian Mock Database Generator ---
@@ -234,7 +254,7 @@ export class TableSingleExportComponent implements OnInit {
     const statuses = ['فعال', 'در انتظار', 'بایگانی‌شده'];
     const names = ['لپ‌تاپ گیمینگ', 'کفش ورزشی', 'صندلی ارگونومیک', 'دستگاه اسپرسو', 'کنسول بازی'];
 
-    this.mockDatabase = Array.from({ length: count }, (_, i) => ({
+    this.mockDatabase = Array.from({length: count}, (_, i) => ({
       id: i + 1,
       code: `PRD-${1000 + i}`,
       name: `${names[i % names.length]} (${i + 1})`,
