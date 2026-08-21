@@ -4,6 +4,7 @@
   width: 100%;
 }
 
+/* Base Select Input Box */
 .tree-select-input {
   display: flex;
   align-items: center;
@@ -21,8 +22,13 @@
     border-color: var(--p-primary-color, #3b82f6);
   }
 
-  .selected-text { color: var(--p-content-color, inherit); font-weight: 500; }
-  .placeholder-text { color: var(--p-inputtext-color); }
+  .selected-text {
+    color: var(--p-content-color, inherit);
+    font-weight: 500;
+  }
+  .placeholder-text {
+    color: var(--p-inputtext-color);
+  }
 
   .dropdown-icon {
     color: var(--p-text-muted-color, #64748b);
@@ -31,42 +37,32 @@
   }
 }
 
+/* Root Level Overlay Panel (TieredMenu Style) */
 .tree-select-overlay {
   position: absolute;
   top: calc(100% + 4px);
-  left: 0; right: 0;
+  right: 0; // RTL Alignment: anchor to the right
   z-index: 1000;
-  max-height: 250px;
-  overflow-y: auto;
+  min-width: 210px;
   background-color: var(--p-content-background, var(--p-surface-0, #ffffff));
   border: 1px solid var(--p-content-border-color, var(--p-surface-200, #e2e8f0));
   border-radius: 8px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
-  padding: 0.5rem 0;
+  padding: 0.35rem 0;
+  overflow: visible !important; // CRITICAL: Allows flyout submenus to extend outside
 }
 
-.tree-list-root, .child-tree-list {
-  list-style: none;
-  margin: 0; padding: 0;
-}
-
+.tree-list-root,
 .child-tree-list {
-  display: none;
-  padding-right: 1.25rem; // Indentation for RTL layout
-  padding-left: 0.5rem;
-
-  &.show {
-    display: block !important;
-  }
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
 
+/* Individual Tiered Menu Items */
 .tree-node-item {
   display: block;
-
-  /* CSS HOVER FALLBACK: Automatically reveals child lists on hover */
-  &:hover > .child-tree-list {
-    display: block !important;
-  }
+  position: relative; // Serves as the anchor point for child tier panels
 
   .node-content-row {
     display: flex;
@@ -74,13 +70,13 @@
     width: 100%;
     box-sizing: border-box;
     gap: 0.5rem;
-    padding: 0.45rem 0.75rem;
+    padding: 0.55rem 0.75rem;
     cursor: pointer;
     border-radius: 4px;
-    transition: background-color 0.15s;
+    transition: background-color 0.15s ease, color 0.15s ease;
 
     &:hover {
-      background-color: var(--p-datatable-row-hover-background, rgba(0, 0, 0, 0.05));
+      background-color: var(--p-datatable-row-hover-background, rgba(0, 0, 0, 0.04));
     }
 
     &.selected {
@@ -98,24 +94,17 @@
       .toggler-icon {
         font-size: 0.75rem;
         color: var(--p-text-muted-color, #64748b);
+        /* RTL Mode: Arrow points LEFT for submenus */
+        transform: rotate(180deg);
         transition: transform 0.2s ease;
-        transform: rotate(180deg); // Points LEFT in RTL mode
-
-        &.expanded {
-          transform: rotate(90deg);
-        }
       }
-    }
-
-    /* Rotate toggler icon down on hover */
-    &:hover .toggler-icon {
-      transform: rotate(90deg);
     }
 
     .node-label {
       flex: 1;
       font-size: 0.9rem;
       color: var(--p-content-color, inherit);
+      white-space: nowrap;
     }
 
     .group-tag {
@@ -125,5 +114,43 @@
       background-color: var(--p-surface-200, #e2e8f0);
       color: var(--p-text-muted-color, #64748b);
     }
+  }
+
+  /* SUBMENU TIER OVERLAY (Opens beside parent menu) */
+  .child-tree-list {
+    display: none;
+    position: absolute;
+    top: 0;
+    right: 100%; // Opens flyout menu to the LEFT (RTL)
+    min-width: 200px;
+    background-color: var(--p-content-background, var(--p-surface-0, #ffffff));
+    border: 1px solid var(--p-content-border-color, var(--p-surface-200, #e2e8f0));
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    padding: 0.35rem 0;
+    z-index: 1001;
+    margin-right: 4px; // Gap spacing
+    overflow: visible !important;
+
+    /* INVISIBLE BRIDGE FIX: Fills the gap so hover state remains active */
+    &::before {
+      content: '';
+      position: absolute;
+      top: -5px;
+      bottom: -5px;
+      right: -10px; // Extends rightward to overlap the parent item
+      width: 15px;  // Covers the gap completely
+      background: transparent;
+    }
+  }
+
+  /* Reveal Tiered Submenu on Item Hover */
+  &:hover > .child-tree-list {
+    display: block !important;
+  }
+
+  /* Highlight parent node arrow when active/hovered */
+  &:hover > .node-content-row .toggler-icon {
+    color: var(--p-primary-color, #3b82f6);
   }
 }

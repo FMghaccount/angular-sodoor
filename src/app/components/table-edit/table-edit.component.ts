@@ -338,34 +338,4 @@ export class TableEditComponent implements OnInit {
 
     return new Date();
   }
-
-  // --- HOVER EXPANSION ---
-  onNodeHover(node: TreeNode): void {
-    if (node && node.children && node.children.length > 0 && !node.expanded) {
-      // Create new reference array to trigger change detection in PrimeNG
-      node.expanded = true;
-      this.treeNodes = [...this.treeNodes];
-    }
-  }
-
-  // --- PARENT & LEAF NODE SELECTION ---
-  onNodeClick(node: TreeNode, event: Event): void {
-    event.stopPropagation();
-    // Allow direct selection of parent or leaf node in form
-    this.parentForm.get('categoryNode')?.setValue(node);
-  }
-
-  onNodeSelect(event: any): void {
-    console.log(event);
-    console.log(this.treeSelect);
-    if (event && event.node) {
-      this.parentForm.get('categoryNode')?.setValue(event.node);
-    }
-  }
-
-  onNodeExpand(event: any): void {
-    if (event && event.node) {
-      event.node.expanded = true;
-    }
-  }
 }
