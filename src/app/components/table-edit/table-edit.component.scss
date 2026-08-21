@@ -19,11 +19,61 @@
   box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15) !important;
 }
 
-.custom-table{
-  table{
+.table-page-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  gap: 1rem;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+/* Parent Form Styling */
+.parent-form-card {
+  flex-shrink: 0;
+  background-color: var(--p-content-background, var(--p-surface-0, #ffffff));
+  border: 1px solid var(--p-content-border-color, var(--p-surface-200, #e5e7eb));
+  border-radius: 12px;
+  padding: 1.25rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+
+  .card-title {
+    margin: 0 0 1rem 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--p-content-color, inherit);
+  }
+
+  .parent-form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+
+      label {
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: var(--p-content-color, inherit);
+      }
+
+      input,
+      p-select {
+        width: 100%;
+      }
+    }
+  }
+}
+
+.custom-table {
+  table {
     table-layout: fixed;
   }
 }
+
 /* Card Wrapper & RTL */
 .modern-table-card {
   display: flex;
@@ -65,9 +115,10 @@
     }
 
     /* Sticky Header Cells */
-    .p-datatable-thead{
+    .p-datatable-thead {
       z-index: 1;
     }
+
     .p-datatable-thead > tr > th {
       position: sticky;
       top: 0;
@@ -196,9 +247,20 @@
   display: inline-block;
 }
 
-.status-badge.active { background-color: #dcfce7; color: #15803d; }
-.status-badge.pending { background-color: #fef9c3; color: #a16207; }
-.status-badge.inactive { background-color: #fee2e2; color: #b91c1c; }
+.status-badge.active {
+  background-color: #dcfce7;
+  color: #15803d;
+}
+
+.status-badge.pending {
+  background-color: #fef9c3;
+  color: #a16207;
+}
+
+.status-badge.inactive {
+  background-color: #fee2e2;
+  color: #b91c1c;
+}
 
 /* Table Footer Button Area */
 .footer-cell {
@@ -214,7 +276,7 @@
   }
 }
 
-.excel-actions{
+.excel-actions {
   margin-bottom: 16px;
   display: flex;
   align-items: center;
@@ -373,5 +435,80 @@
   &.inactive {
     background-color: rgba(239, 68, 68, 0.15);
     color: var(--p-red-500, #ef4444);
+  }
+}
+
+p-treeSelect.hover-tree-select {
+  width: 100%;
+  display: block;
+}
+
+:host ::ng-deep p-treeSelect {
+  .p-inputwrapper {
+    width: 100%;
+  }
+}
+
+/* Full Width Node Wrapper for Mouse Events */
+.tree-node-hover-wrapper {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  padding: 0.25rem 0;
+  cursor: pointer;
+}
+
+::ng-deep .p-treeselect-overlay {
+  background-color: var(--p-content-background, var(--p-surface-0, #ffffff)) !important;
+  border: 1px solid var(--p-content-border-color, var(--p-surface-200, #e5e7eb)) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+
+  .p-tree {
+    background: transparent !important;
+    border: none !important;
+    padding: 0.5rem !important;
+    color: var(--p-content-color, inherit) !important;
+
+    /* 1. Remove focus border / ring on the first node when opening overlay */
+    .p-treenode-content,
+    .p-treenode-content:focus,
+    .p-treenode-content.p-treenode-focus,
+    .p-treenode:focus,
+    .p-treenode-selectable:focus {
+      outline: none !important;
+      box-shadow: none !important;
+      border: none !important;
+    }
+
+    /* 2. Custom Hover and Active State Styling */
+    .p-treenode-content {
+      border-radius: 6px;
+      padding: 0.35rem 0.5rem !important;
+
+      &:hover {
+        background-color: var(--p-datatable-row-hover-background, rgba(0, 0, 0, 0.04)) !important;
+      }
+    }
+
+    /* 3. RTL Arrow Direction Correction */
+    /* Flip default chevron right icons to point left in RTL mode */
+    .p-tree-node-toggle-icon,
+    .p-tree-toggler-icon,
+    button:has(chevronrighticonv) {
+      transform: rotate(180deg) !important;
+    }
+    button:has(chevrondownicon) {
+      transform: rotate(180deg) !important;
+    }
+
+    /* Rotate downward when node is expanded */
+    .p-treenode-expanded > .p-treenode-content {
+      .p-tree-node-toggle-icon,
+      .p-tree-toggler-icon,
+      .pi-chevron-right {
+        transform: rotate(90deg) !important;
+      }
+    }
   }
 }

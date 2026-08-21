@@ -8,21 +8,30 @@ body {
   font-family: "iranYekan";
 }
 
-.p-datatable-header:has(.caption-wrapper){
+.p-datatable-header:has(.caption-wrapper) {
   padding: 0 !important;
 }
 
 .p-custom-select-overlay {
   direction: ltr;
+
   .p-select-list {
     direction: rtl;
   }
 }
 
-.p-datepicker{
+.p-datepicker {
   width: 100% !important;
 }
 
-.custom-date-picker{
+.custom-date-picker {
   direction: ltr;
+}
+
+.p-custom-tree-select-overlay {
+  direction: ltr;
+
+  .p-overlay-content {
+    direction: rtl;
+  }
 }

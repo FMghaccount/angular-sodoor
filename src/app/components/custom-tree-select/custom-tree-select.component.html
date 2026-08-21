@@ -1,0 +1,52 @@
+<div class="tree-select-input" [class.focused]="isOpen" (click)="toggleDropdown($event)">
+  <span *ngIf="selectedNode" class="selected-text">{{ selectedNode.label }}</span>
+  <span *ngIf="!selectedNode" class="placeholder-text">{{ placeholder }}</span>
+  <i class="pi pi-chevron-down dropdown-icon" [class.rotated]="isOpen"></i>
+</div>
+
+<!-- Dropdown Overlay -->
+<div *ngIf="isOpen" class="tree-select-overlay" (click)="$event.stopPropagation()">
+  <ul class="tree-list-root">
+    <ng-container *ngFor="let node of nodes">
+      <ng-container *ngTemplateOutlet="nodeTemplate; context: { $implicit: node }"></ng-container>
+    </ng-container>
+  </ul>
+</div>
+
+<!-- Recursive Tree Node Template -->
+<ng-template #nodeTemplate let-node>
+  <li
+    class="tree-node-item"
+    [class.is-parent]="hasChildren(node)"
+    [class.is-expanded]="node.expanded"
+    (mouseenter)="expandNode(node)"
+    (mouseover)="expandNode(node)">
+
+    <div
+      class="node-content-row"
+      [class.selected]="selectedNode === node"
+      (click)="onNodeClick(node, $event)"
+    >
+
+      <!-- Arrow Icon for Parents -->
+<!--      <span class="toggler-wrapper" (click)="toggleExpand(node, $event)">-->
+      <span class="toggler-wrapper">
+            <i
+              *ngIf="hasChildren(node)"
+              class="pi pi-chevron-right toggler-icon"
+              [class.expanded]="node.expanded">
+            </i>
+          </span>
+
+      <span class="node-label">{{ node.label }}</span>
+<!--      <span *ngIf="hasChildren(node)" class="group-tag">گروه</span>-->
+    </div>
+
+    <!-- Render Children -->
+    <ul *ngIf="hasChildren(node)" class="child-tree-list" [class.show]="node.expanded">
+      <ng-container *ngFor="let child of node.children">
+        <ng-container *ngTemplateOutlet="nodeTemplate; context: { $implicit: child }"></ng-container>
+      </ng-container>
+    </ul>
+  </li>
+</ng-template>

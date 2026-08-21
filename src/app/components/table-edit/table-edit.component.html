@@ -1,207 +1,269 @@
 <p-confirmDialog></p-confirmDialog>
-<input #fileInput type="file" accept=".xlsx, .xls" style="display: none" (change)="onFileSelected($event)" />
-<div class="modern-table-card" dir="rtl">
-  <p-table
-    [value]="products"
-    dataKey="id"
-    [paginator]="true"
-    [rows]="rows"
-    [rowsPerPageOptions]="rowsPerPageOptions"
-    [showCurrentPageReport]="true"
-    [styleClass]="'custom-table'"
-    scrollHeight="65vh"
-    currentPageReportTemplate="نمایش {first} تا {last} از {totalRecords} مورد"
-    [tableStyle]="{ 'min-width': '65rem' }">
+<input #fileInput type="file" accept=".xlsx, .xls" style="display: none" (change)="onFileSelected($event)"/>
+<div class="table-page-container" dir="rtl">
+  <div class="parent-form-card">
+    <h3 class="card-title">اطلاعات والد (فرمت اصلی)</h3>
+    <form [formGroup]="parentForm" class="parent-form-grid">
 
-    <!-- Modern Caption Form -->
-    <ng-template pTemplate="caption">
-      <div class="caption-wrapper">
-        <div class="caption-header-actions">
-<!--          <h3 class="caption-title">مدیریت اطلاعات</h3>-->
+      <!-- Hover-Expand TreeSelect Field -->
+      <div class="field-group">
+        <label for="parentCategory">دسته‌بندی درختی</label>
+        <app-custom-tree-select
+          id="parentCategory"
+          formControlName="categoryNode"
+          [nodes]="treeNodes"
+          placeholder="انتخاب دسته‌بندی (فقط برگ‌ها)">
+        </app-custom-tree-select>
+      </div>
 
-          <!-- Excel Actions Group -->
-          <div class="excel-actions">
-            <p-button
-              label="دانلود قالب اکسل"
-              icon="pi pi-download"
-              severity="secondary"
-              [outlined]="true"
-              (click)="downloadTemplate()">
-            </p-button>
+      <div class="field-group">
+        <label for="parentTitle">عنوان پروژه / گزارش</label>
 
-            <p-button
-              label="ورود از اکسل"
-              icon="pi pi-upload"
-              severity="help"
-              (click)="fileInput.click()">
-            </p-button>
-          </div>
-        </div>
-        <h3 class="caption-title">افزودن اطلاعات جدید</h3>
-        <form [formGroup]="addRowForm" (ngSubmit)="onAddRow()" class="add-row-grid">
+        <input
+          pInputText
+          id="parentTitle"
+          type="text"
+          formControlName="title"
+          placeholder="عنوان را وارد کنید"
+        />
+      </div>
 
-          <!-- Name -->
-          <div class="field-group">
-            <input pInputText type="text" formControlName="name" placeholder="نام"
-                   [ngClass]="{ 'ng-invalid ng-dirty': addRowForm.get('name')?.invalid && addRowForm.get('name')?.touched }"/>
-            <div class="error-container" *ngIf="addRowForm.get('name')?.invalid && addRowForm.get('name')?.touched">
-              <small class="error-text" *ngIf="addRowForm.get('name')?.errors?.['required']">الزامی است</small>
-              <small class="error-text" *ngIf="addRowForm.get('name')?.errors?.['minlength']">حداقل ۳ کاراکتر</small>
+      <div class="field-group">
+        <label for="parentCategory">دسته‌بندی</label>
+        <p-select
+          id="parentCategory"
+          [options]="categoryOptions"
+          formControlName="category"
+          optionLabel="label"
+          optionValue="value"
+          [overlayOptions]="{
+                styleClass: 'p-custom-select-overlay',
+              }"
+          placeholder="انتخاب دسته‌بندی"
+          [appendTo]="'body'">
+        </p-select>
+      </div>
+
+      <div class="field-group">
+        <label for="parentDescription">توضیحات تکمیلی</label>
+        <input
+          pInputText
+          id="parentDescription"
+          type="text"
+          formControlName="description"
+          placeholder="توضیحات کوتاه"
+        />
+      </div>
+
+    </form>
+  </div>
+  <div class="modern-table-card" dir="rtl">
+    <p-table
+      [value]="products"
+      dataKey="id"
+      [paginator]="true"
+      [rows]="rows"
+      [rowsPerPageOptions]="rowsPerPageOptions"
+      [showCurrentPageReport]="true"
+      [styleClass]="'custom-table'"
+      scrollHeight="65vh"
+      currentPageReportTemplate="نمایش {first} تا {last} از {totalRecords} مورد"
+      [tableStyle]="{ 'min-width': '65rem' }">
+
+      <!-- Modern Caption Form -->
+      <ng-template pTemplate="caption">
+        <div class="caption-wrapper">
+          <div class="caption-header-actions">
+            <!--          <h3 class="caption-title">مدیریت اطلاعات</h3>-->
+
+            <!-- Excel Actions Group -->
+            <div class="excel-actions">
+              <p-button
+                label="دانلود قالب اکسل"
+                icon="pi pi-download"
+                severity="secondary"
+                [outlined]="true"
+                (click)="downloadTemplate()">
+              </p-button>
+
+              <p-button
+                label="ورود از اکسل"
+                icon="pi pi-upload"
+                severity="help"
+                (click)="fileInput.click()">
+              </p-button>
             </div>
           </div>
+          <h3 class="caption-title">افزودن اطلاعات جدید</h3>
+          <form [formGroup]="addRowForm" (ngSubmit)="onAddRow()" class="add-row-grid">
 
-          <!-- Age -->
-          <div class="field-group">
-            <p-inputNumber formControlName="age" placeholder="سن"
-                           [ngClass]="{ 'ng-invalid ng-dirty': addRowForm.get('age')?.invalid && addRowForm.get('age')?.touched }"></p-inputNumber>
-            <div class="error-container" *ngIf="addRowForm.get('age')?.invalid && addRowForm.get('age')?.touched">
-              <small class="error-text" *ngIf="addRowForm.get('age')?.errors?.['required']">الزامی است</small>
-              <small class="error-text"
-                     *ngIf="addRowForm.get('age')?.errors?.['min'] || addRowForm.get('age')?.errors?.['max']">۱۸ تا ۱۰۰
-                سال</small>
+            <!-- Name -->
+            <div class="field-group">
+              <input pInputText type="text" formControlName="name" placeholder="نام"
+                     [ngClass]="{ 'ng-invalid ng-dirty': addRowForm.get('name')?.invalid && addRowForm.get('name')?.touched }"/>
+              <div class="error-container" *ngIf="addRowForm.get('name')?.invalid && addRowForm.get('name')?.touched">
+                <small class="error-text" *ngIf="addRowForm.get('name')?.errors?.['required']">الزامی است</small>
+                <small class="error-text" *ngIf="addRowForm.get('name')?.errors?.['minlength']">حداقل ۳ کاراکتر</small>
+              </div>
             </div>
-          </div>
 
-          <!-- Status -->
-          <div class="field-group">
-            <p-select [options]="statusOptions" [overlayOptions]="{
+            <!-- Age -->
+            <div class="field-group">
+              <p-inputNumber formControlName="age" placeholder="سن"
+                             [ngClass]="{ 'ng-invalid ng-dirty': addRowForm.get('age')?.invalid && addRowForm.get('age')?.touched }"></p-inputNumber>
+              <div class="error-container" *ngIf="addRowForm.get('age')?.invalid && addRowForm.get('age')?.touched">
+                <small class="error-text" *ngIf="addRowForm.get('age')?.errors?.['required']">الزامی است</small>
+                <small class="error-text"
+                       *ngIf="addRowForm.get('age')?.errors?.['min'] || addRowForm.get('age')?.errors?.['max']">۱۸ تا
+                  ۱۰۰
+                  سال</small>
+              </div>
+            </div>
+
+            <!-- Status -->
+            <div class="field-group">
+              <p-select [options]="statusOptions" [overlayOptions]="{
                 styleClass: 'p-custom-select-overlay',
               }" formControlName="status" optionLabel="label" optionValue="value" placeholder="وضعیت"
-                      [appendTo]="'body'"
-                      [ngClass]="{ 'ng-invalid ng-dirty': addRowForm.get('status')?.invalid && addRowForm.get('status')?.touched }"></p-select>
-            <div class="error-container" *ngIf="addRowForm.get('status')?.invalid && addRowForm.get('status')?.touched">
-              <small class="error-text">الزامی است</small>
+                        [appendTo]="'body'"
+                        [ngClass]="{ 'ng-invalid ng-dirty': addRowForm.get('status')?.invalid && addRowForm.get('status')?.touched }"></p-select>
+              <div class="error-container"
+                   *ngIf="addRowForm.get('status')?.invalid && addRowForm.get('status')?.touched">
+                <small class="error-text">الزامی است</small>
+              </div>
             </div>
-          </div>
 
-          <!-- PrimeNG DatePicker -->
-          <div class="field-group">
-            <p-datePicker formControlName="birthDate" placeholder="تاریخ تولد" [showIcon]="true"
-                          [ngClass]="{ 'ng-invalid ng-dirty': addRowForm.get('birthDate')?.invalid && addRowForm.get('birthDate')?.touched }"></p-datePicker>
-            <div class="error-container"
-                 *ngIf="addRowForm.get('birthDate')?.invalid && addRowForm.get('birthDate')?.touched">
-              <small class="error-text">الزامی است</small>
+            <!-- PrimeNG DatePicker -->
+            <div class="field-group">
+              <p-datePicker formControlName="birthDate" placeholder="تاریخ تولد" [showIcon]="true"
+                            [ngClass]="{ 'ng-invalid ng-dirty': addRowForm.get('birthDate')?.invalid && addRowForm.get('birthDate')?.touched }"></p-datePicker>
+              <div class="error-container"
+                   *ngIf="addRowForm.get('birthDate')?.invalid && addRowForm.get('birthDate')?.touched">
+                <small class="error-text">الزامی است</small>
+              </div>
             </div>
-          </div>
 
-          <!-- Add Button -->
-          <div class="field-group button-group">
-            <p-button type="submit" label="افزودن سطر" icon="pi pi-plus" styleClass="p-button-primary"></p-button>
-          </div>
+            <!-- Add Button -->
+            <div class="field-group button-group">
+              <p-button type="submit" label="افزودن سطر" icon="pi pi-plus" styleClass="p-button-primary"></p-button>
+            </div>
 
-        </form>
-      </div>
-    </ng-template>
+          </form>
+        </div>
+      </ng-template>
 
-    <!-- Header -->
-    <ng-template pTemplate="header">
-      <tr>
-        <th style="width: 24%">نام (متن)</th>
-        <th style="width: 24%">سن (عدد)</th>
-        <th style="width: 24%">وضعیت (انتخاب)</th>
-        <th style="width: 24%">تاریخ تولد</th>
-        <th style="width: 4%; text-align: center;">عملیات</th>
-      </tr>
-    </ng-template>
+      <!-- Header -->
+      <ng-template pTemplate="header">
+        <tr>
+          <th style="width: 24%">نام (متن)</th>
+          <th style="width: 24%">سن (عدد)</th>
+          <th style="width: 24%">وضعیت (انتخاب)</th>
+          <th style="width: 24%">تاریخ تولد</th>
+          <th style="width: 4%; text-align: center;">عملیات</th>
+        </tr>
+      </ng-template>
 
-    <!-- Table Body -->
-    <ng-template pTemplate="body" let-product>
-      <tr>
+      <!-- Table Body -->
+      <ng-template pTemplate="body" let-product>
+        <tr>
 
-        <!-- Text Column -->
-        <td [pEditableColumn]="product.name" pEditableColumnField="name" (click)="onEditInit('name', product.name)">
-          <p-cellEditor>
-            <ng-template pTemplate="input">
-              <form [formGroup]="editForm" class="cell-editor-form">
-                <input pInputText type="text" formControlName="name" (blur)="onEditSave(product, 'name')"/>
-                <div class="error-container" *ngIf="editForm.get('name')?.invalid && editForm.get('name')?.touched">
-                  <small class="error-text">حداقل ۳ کاراکتر الزامی است.</small>
-                </div>
-              </form>
-            </ng-template>
-            <ng-template pTemplate="output">{{ product.name }}</ng-template>
-          </p-cellEditor>
-        </td>
+          <!-- Text Column -->
+          <td [pEditableColumn]="product.name" pEditableColumnField="name" (click)="onEditInit('name', product.name)">
+            <p-cellEditor>
+              <ng-template pTemplate="input">
+                <form [formGroup]="editForm" class="cell-editor-form">
+                  <input pInputText type="text" formControlName="name" (blur)="onEditSave(product, 'name')"/>
+                  <div class="error-container" *ngIf="editForm.get('name')?.invalid && editForm.get('name')?.touched">
+                    <small class="error-text">حداقل ۳ کاراکتر الزامی است.</small>
+                  </div>
+                </form>
+              </ng-template>
+              <ng-template pTemplate="output">{{ product.name }}</ng-template>
+            </p-cellEditor>
+          </td>
 
-        <!-- Number Column -->
-        <td [pEditableColumn]="product.age" pEditableColumnField="age" (click)="onEditInit('age', product.age)">
-          <p-cellEditor>
-            <ng-template pTemplate="input">
-              <form [formGroup]="editForm" class="cell-editor-form">
-                <p-inputNumber formControlName="age" (onBlur)="onEditSave(product, 'age')"></p-inputNumber>
-                <div class="error-container" *ngIf="editForm.get('age')?.invalid && editForm.get('age')?.touched">
-                  <small class="error-text">سن باید بین ۱۸ تا ۱۰۰ باشد.</small>
-                </div>
-              </form>
-            </ng-template>
-            <ng-template pTemplate="output">{{ product.age }}</ng-template>
-          </p-cellEditor>
-        </td>
+          <!-- Number Column -->
+          <td [pEditableColumn]="product.age" pEditableColumnField="age" (click)="onEditInit('age', product.age)">
+            <p-cellEditor>
+              <ng-template pTemplate="input">
+                <form [formGroup]="editForm" class="cell-editor-form">
+                  <p-inputNumber formControlName="age" (onBlur)="onEditSave(product, 'age')"></p-inputNumber>
+                  <div class="error-container" *ngIf="editForm.get('age')?.invalid && editForm.get('age')?.touched">
+                    <small class="error-text">سن باید بین ۱۸ تا ۱۰۰ باشد.</small>
+                  </div>
+                </form>
+              </ng-template>
+              <ng-template pTemplate="output">{{ product.age }}</ng-template>
+            </p-cellEditor>
+          </td>
 
-        <!-- Select Column -->
-        <td [pEditableColumn]="product.status" pEditableColumnField="status"
-            (click)="onEditInit('status', product.status)">
-          <p-cellEditor>
-            <ng-template pTemplate="input">
-              <form [formGroup]="editForm" class="cell-editor-form">
-                <p-select [options]="statusOptions" [overlayOptions]="{
+          <!-- Select Column -->
+          <td [pEditableColumn]="product.status" pEditableColumnField="status"
+              (click)="onEditInit('status', product.status)">
+            <p-cellEditor>
+              <ng-template pTemplate="input">
+                <form [formGroup]="editForm" class="cell-editor-form">
+                  <p-select [options]="statusOptions" [overlayOptions]="{
                 styleClass: 'p-custom-select-overlay',
               }" formControlName="status" optionLabel="label" optionValue="value"
-                          [appendTo]="'body'"
-                          (onChange)="onEditSave(product, 'status')"
-                          (onBlur)="onEditSave(product, 'status')"></p-select>
-                <div class="error-container" *ngIf="editForm.get('status')?.invalid && editForm.get('status')?.touched">
-                  <small class="error-text">انتخاب وضعیت الزامی است.</small>
-                </div>
-              </form>
-            </ng-template>
-            <ng-template pTemplate="output">
+                            [appendTo]="'body'"
+                            (onChange)="onEditSave(product, 'status')"
+                            (onBlur)="onEditSave(product, 'status')"></p-select>
+                  <div class="error-container"
+                       *ngIf="editForm.get('status')?.invalid && editForm.get('status')?.touched">
+                    <small class="error-text">انتخاب وضعیت الزامی است.</small>
+                  </div>
+                </form>
+              </ng-template>
+              <ng-template pTemplate="output">
               <span class="status-badge" [ngClass]="product.status.toLowerCase()">
                 {{ getStatusLabel(product.status) }}
               </span>
-            </ng-template>
-          </p-cellEditor>
-        </td>
+              </ng-template>
+            </p-cellEditor>
+          </td>
 
-        <!-- DatePicker Column -->
-        <td [pEditableColumn]="product.birthDate" pEditableColumnField="birthDate"
-            (click)="onEditInit('birthDate', product.birthDate)">
-          <p-cellEditor>
-            <ng-template pTemplate="input">
-              <form [formGroup]="editForm" class="cell-editor-form">
-                <p-datePicker appendTo="body" [panelStyleClass]="'custom-date-picker'" formControlName="birthDate" [showIcon]="true"
-                              (onSelect)="onEditSave(product, 'birthDate')"
-                              (onBlur)="onEditSave(product, 'birthDate')"></p-datePicker>
-                <div class="error-container"
-                     *ngIf="editForm.get('birthDate')?.invalid && editForm.get('birthDate')?.touched">
-                  <small class="error-text">انتخاب تاریخ الزامی است.</small>
-                </div>
-              </form>
-            </ng-template>
-            <ng-template pTemplate="output">{{ product.birthDate | date:'yyyy/MM/dd' }}</ng-template>
-          </p-cellEditor>
-        </td>
+          <!-- DatePicker Column -->
+          <td [pEditableColumn]="product.birthDate" pEditableColumnField="birthDate"
+              (click)="onEditInit('birthDate', product.birthDate)">
+            <p-cellEditor>
+              <ng-template pTemplate="input">
+                <form [formGroup]="editForm" class="cell-editor-form">
+                  <p-datePicker appendTo="body" [panelStyleClass]="'custom-date-picker'" formControlName="birthDate"
+                                [showIcon]="true"
+                                (onSelect)="onEditSave(product, 'birthDate')"
+                                (onBlur)="onEditSave(product, 'birthDate')"></p-datePicker>
+                  <div class="error-container"
+                       *ngIf="editForm.get('birthDate')?.invalid && editForm.get('birthDate')?.touched">
+                    <small class="error-text">انتخاب تاریخ الزامی است.</small>
+                  </div>
+                </form>
+              </ng-template>
+              <ng-template pTemplate="output">{{ product.birthDate | date:'yyyy/MM/dd' }}</ng-template>
+            </p-cellEditor>
+          </td>
 
-        <!-- Actions Column -->
-        <td style="text-align: center;">
-          <p-button icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger"
-                    (click)="confirmDelete(product)"></p-button>
-        </td>
+          <!-- Actions Column -->
+          <td style="text-align: center;">
+            <p-button icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger"
+                      (click)="confirmDelete(product)"></p-button>
+          </td>
 
-      </tr>
-    </ng-template>
+        </tr>
+      </ng-template>
 
-    <!-- Footer -->
-    <ng-template pTemplate="footer">
-      <tr>
-        <td colspan="5" class="footer-cell">
-          <p-button label="ثبت و نمایش داده‌ها در کنسول"
-                    icon="pi pi-code"
-                    severity="success"
-                    (click)="logTableData()"></p-button>
-        </td>
-      </tr>
-    </ng-template>
+      <!-- Footer -->
+      <ng-template pTemplate="footer">
+        <tr>
+          <td colspan="5" class="footer-cell">
+            <p-button label="ثبت و نمایش داده‌ها در کنسول"
+                      icon="pi pi-code"
+                      severity="success"
+                      (click)="logTableData()"></p-button>
+          </td>
+        </tr>
+      </ng-template>
 
-  </p-table>
+    </p-table>
+  </div>
 </div>
