@@ -97,6 +97,9 @@ export class TableEditComponent implements OnInit {
     }
   ];
 
+  isParsingExcel: boolean = false;
+  parsedData: any[] = [];
+
   constructor(
     private fb: FormBuilder,
     private confirmationService: ConfirmationService
@@ -162,51 +165,45 @@ export class TableEditComponent implements OnInit {
   }
 
   // --- EXCEL IMPORT FUNCTIONALITY ---
-  onFileSelected(event: Event): void {
+  onFileUpload(event: Event): void {
     const target = event.target as HTMLInputElement;
     const file = target.files?.[0];
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = (e: ProgressEvent<FileReader>) => {
-      const data = new Uint8Array(e.target?.result as ArrayBuffer);
+    this.isParsingExcel = true; // Block UI locally without freezing browser thread
 
-      // Set cellDates: false to get raw numbers/strings and prevent local timezone conversion shift
-      const workbook = XLSX.read(data, {type: 'array', cellDates: false, raw: true});
-      const firstSheetName = workbook.SheetNames[0];
-      const worksheet = workbook.Sheets[firstSheetName];
+    // Instantiate Web Worker
+    const worker = new Worker(
+      new URL('./excel-import.worker.ts', import.meta.url),
+      { type: 'module' }
+    );
 
-      const rawData: any[] = XLSX.utils.sheet_to_json(worksheet, {header: 1});
-      console.log(rawData)
+    // Receive processed results back from Worker
+    worker.onmessage = ({ data }) => {
+      this.isParsingExcel = false;
 
-      const importedProducts: RowData[] = [];
-      const rows = rawData.slice(1); // Skip header
+      if (data.success) {
+        this.products = [...data.products, ...this.products];
+      } else {
+        console.error('Error parsing file:', data.error);
+      }
 
-      rows.forEach((row, index) => {
-        if (!row || row.length === 0) return;
-
-        const [name, age, statusLabel, birthDateVal] = row;
-
-        const mappedStatus = this.statusOptions.find(
-          (opt) => opt.label === String(statusLabel ?? '').trim()
-        )?.value || 'Active';
-
-        const parsedDate = this.parseExcelDate(birthDateVal);
-
-        importedProducts.push({
-          id: Date.now() + index,
-          name: name ? String(name).trim() : 'بدون نام',
-          age: Number(age) || 18,
-          status: mappedStatus,
-          birthDate: parsedDate
-        });
-      });
-
-      this.products = [...importedProducts, ...this.products];
-      target.value = ''; // Reset input
+      target.value = ''; // Reset input element
+      worker.terminate(); // Clean up worker instance
     };
 
-    reader.readAsArrayBuffer(file);
+    worker.onerror = (err) => {
+      this.isParsingExcel = false;
+      console.error('Worker error:', err);
+      target.value = '';
+      worker.terminate();
+    };
+
+    // Pass file and mapping metadata to background thread
+    worker.postMessage({
+      file,
+      statusOptions: this.statusOptions
+    });
   }
 
   // Existing methods

@@ -12,8 +12,8 @@
   width: 100%;
   padding-block: var(--p-inputtext-padding-y);
   padding-inline: var(--p-inputtext-padding-x);
-  background-color: var(--p-content-background, var(--p-surface-0, #ffffff));
-  border: 1px solid var(--p-content-border-color, var(--p-surface-300, #cbd5e1));
+  background: var(--p-inputtext-background);
+  border: 1px solid var(--p-inputtext-border-color);
   border-radius: 6px;
   cursor: pointer;
   box-sizing: border-box;
