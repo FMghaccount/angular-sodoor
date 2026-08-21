@@ -285,7 +285,9 @@ export class TableEditComponent implements OnInit {
         data: exportedTableData
       }
     ];
-
+    this.parentForm.reset();
+    this.addRowForm.reset();
+    this.editForm.reset();
     console.log('Final Payload Output:', resultPayload);
   }
 
