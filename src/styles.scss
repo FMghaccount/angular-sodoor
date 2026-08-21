@@ -2,6 +2,7 @@
 @import "primeicons/primeicons.css";
 @import "tailwindcss";
 @import "./assets/scss/font/iran-yekan";
+@import "primeflex/primeflex.css";
 
 body {
   direction: rtl;
@@ -34,4 +35,9 @@ body {
   .p-overlay-content {
     direction: rtl;
   }
+}
+
+.p-overlay-mask{
+  position: absolute !important;
+  border-radius: 8px
 }

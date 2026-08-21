@@ -1,0 +1,34 @@
+.gap-2 { gap: 0.5rem; }
+.gap-3 { gap: 1rem; }
+
+.modern-table-card {
+  // Uses PrimeNG native content background and border tokens
+  background-color: var(--p-content-background, var(--p-surface-0, #ffffff));
+  color: var(--p-content-color, inherit);
+  border: 1px solid var(--p-content-border-color, var(--p-surface-200, #e5e7eb));
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+
+  ::ng-deep .p-datatable {
+    // Force native datatable transparent backgrounds to inherit host card color
+    .p-datatable-header,
+    .p-datatable-thead > tr > th,
+    .p-datatable-tbody > tr > td,
+    .p-datatable-tfoot > tr > td,
+    .p-paginator {
+      background-color: transparent;
+      color: var(--p-content-color, inherit);
+      border-color: var(--p-content-border-color, var(--p-surface-200, #e5e7eb));
+    }
+
+    .p-datatable-tbody > tr {
+      background-color: transparent;
+      color: var(--p-content-color, inherit);
+
+      &:hover {
+        background-color: var(--p-datatable-row-hover-background, rgba(255, 255, 255, 0.04));
+      }
+    }
+  }
+}
