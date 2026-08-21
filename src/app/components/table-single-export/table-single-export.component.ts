@@ -59,6 +59,7 @@ export class TableSingleExportComponent implements OnInit {
   private platformId = inject(PLATFORM_ID);
   private transferState = inject(TransferState);
   private mockDatabase: ParentRowData[] = [];
+  excelRowData: any = [];
 
   ngOnInit(): void {
     // 1. Column Definitions
@@ -177,40 +178,37 @@ export class TableSingleExportComponent implements OnInit {
     if (!this.selectedRow) return;
 
     const row = this.selectedRow;
+    let createLargeFile: boolean = false
 
     // Single Row Excel Dataset with Persian Headers
-    const excelRowData: any = [];
 
-    // const items = Array.from({ length: 25000 }, (_, i) => i);
-    //
-    // items.forEach((_, i) => {
-    //   // excelRowData.push({
-    //   //   'نام': 'نمونه نام 1',
-    //   //   'سن': 20,
-    //   //   'وضعیت': 'فعال',
-    //   //   'تاریخ تولد': '6/10/1999',
-    //   // })
-    // })
+    if(createLargeFile) {
+      this.createExcelFile(row)
+    } else {
+      this.excelRowData.push({
+        'شناسه': row.id,
+        'کد محصول': row.code,
+        'نام': row.name,
+        'دسته‌بندی': row.category,
+        'موجودی': row.quantity,
+        'وضعیت': row.status,
+        'قیمت': row.price,
+        'تاریخ ثبت': row.createdDate
+      })
 
-    excelRowData.push({
-      'شناسه': row.id,
-      'کد محصول': row.code,
-      'نام': row.name,
-      'دسته‌بندی': row.category,
-      'موجودی': row.quantity,
-      'وضعیت': row.status,
-      'قیمت': row.price,
-      'تاریخ ثبت': row.createdDate
-    })
+      const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(this.excelRowData);
+      const workbook: XLSX.WorkBook = {
+        Sheets: {'داده_ردیف': worksheet},
+        SheetNames: ['داده_ردیف']
+      };
 
-    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(excelRowData);
-    const workbook: XLSX.WorkBook = {
-      Sheets: {'داده_ردیف': worksheet},
-      SheetNames: ['داده_ردیف']
-    };
+      // Prompt Excel File Download Directly
+      XLSX.writeFile(workbook, `ردیف_${row.id}_${row.code}.xlsx`);
+    }
+    // create large Excel file
 
-    // Prompt Excel File Download Directly
-    XLSX.writeFile(workbook, `ردیف_${row.id}_${row.code}.xlsx`);
+
+    this.excelRowData = []
   }
 
   // --- Rule Match Evaluator ---
@@ -264,5 +262,46 @@ export class TableSingleExportComponent implements OnInit {
       price: Math.floor(Math.random() * 5000000 + 100000),
       createdDate: `1403/${(i % 12 + 1).toString().padStart(2, '0')}/${((i % 28) + 1).toString().padStart(2, '0')}`
     }));
+  }
+
+  createExcelFile(row: ParentRowData): void {
+    this.loading = true; // Block UI locally without freezing browser thread
+
+    // Instantiate Web Worker
+    const worker = new Worker(
+      new URL('./excel-export.worker.ts', import.meta.url),
+      { type: 'module' }
+    );
+
+    // Receive processed results back from Worker
+    worker.onmessage = ({ data }) => {
+      this.loading = false;
+
+      if (data.success) {
+        this.excelRowData = [...data.products];
+        const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(this.excelRowData);
+        const workbook: XLSX.WorkBook = {
+          Sheets: {'داده_ردیف': worksheet},
+          SheetNames: ['داده_ردیف']
+        };
+
+        // Prompt Excel File Download Directly
+        XLSX.writeFile(workbook, `ردیف_${row.id}_${row.code}.xlsx`);
+      } else {
+        console.error('Error parsing file:', data.error);
+      }// Reset input element
+      worker.terminate(); // Clean up worker instance
+    };
+
+    worker.onerror = (err) => {
+      this.loading = false;
+      console.error('Worker error:', err);
+      worker.terminate();
+    };
+
+    // Pass file and mapping metadata to background thread
+    worker.postMessage({
+      count: 250000
+    });
   }
 }
