@@ -26,13 +26,88 @@
 }
 /* Card Wrapper & RTL */
 .modern-table-card {
-  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  height: 100%;
+  box-sizing: border-box;
+  padding: 1.25rem;
+  background-color: var(--p-content-background, var(--p-surface-0, #ffffff));
+  color: var(--p-content-color, inherit);
+  border: 1px solid var(--p-content-border-color, var(--p-surface-200, #e5e7eb));
   border-radius: 12px;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
-  padding: 1.5rem;
-  border: 1px solid #e2e8f0;
-  text-align: right;
-  direction: rtl;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+
+  ::ng-deep .p-datatable {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    height: 100%;
+    min-height: 0;
+
+    .p-datatable-header {
+      flex-shrink: 0;
+      background-color: transparent;
+      padding: 0;
+      border: none;
+    }
+
+    /* Container for scrollable table */
+    .p-datatable-container,
+    .p-datatable-scrollable-body,
+    .p-datatable-table-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      overflow-y: auto;
+      background-color: transparent;
+    }
+
+    /* Sticky Header Cells */
+    .p-datatable-thead{
+      z-index: 1;
+    }
+    .p-datatable-thead > tr > th {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      background-color: var(
+        --p-datatable-header-cell-background,
+        var(--p-surface-100, var(--p-surface-800, #f9fafb))
+      ) !important;
+      color: var(--p-content-color, inherit);
+      border-color: var(--p-content-border-color, var(--p-surface-200, #e5e7eb));
+    }
+
+    /* Sticky Footer Cells */
+    .p-datatable-tfoot > tr > td {
+      position: sticky;
+      bottom: 0;
+      z-index: 2;
+      background-color: var(
+        --p-datatable-footer-cell-background,
+        var(--p-surface-100, var(--p-surface-800, #f9fafb))
+      ) !important;
+      color: var(--p-content-color, inherit);
+      border-color: var(--p-content-border-color, var(--p-surface-200, #e5e7eb));
+    }
+
+    .p-paginator {
+      flex-shrink: 0;
+      background-color: transparent;
+      border-color: var(--p-content-border-color, var(--p-surface-200, #e5e7eb));
+    }
+
+    .p-datatable-tbody > tr {
+      background-color: transparent;
+      color: var(--p-content-color, inherit);
+
+      &:hover {
+        background-color: var(--p-datatable-row-hover-background, rgba(255, 255, 255, 0.04));
+      }
+    }
+  }
 }
 
 /* Caption Header & Form */
