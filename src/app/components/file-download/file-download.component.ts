@@ -20,6 +20,8 @@ export class FileDownloadComponent implements OnInit {
 
   readonly directoryHandle = signal<FSDirectoryHandle | null>(null);
   readonly isDownloading = signal(false);
+  fileName = `report-${Date.now()}.txt`;
+  content = `Generated at ${new Date().toISOString()}\nHello from Angular 18 + PrimeNG 18!`;
 
   async ngOnInit(): Promise<void> {
     if (!this.isBrowser) {
@@ -61,9 +63,10 @@ export class FileDownloadComponent implements OnInit {
     } catch (err: any) {
       if (err?.name !== 'AbortError') {
         this.messageService.add({
-          severity: 'error',
+          severity: 'warn',
           summary: 'خطا',
-          detail: err?.message ?? 'امکان انتخاب پوشه وجود ندارد.'
+          // detail: err?.message ?? 'امکان انتخاب پوشه وجود ندارد.فایل در مسیر پیشفرض مرورگر ذخیره می شود'
+          detail: 'امکان انتخاب پوشه وجود ندارد.فایل در مسیر پیشفرض مرورگر ذخیره می شود'
         });
       }
       return null;
@@ -73,8 +76,6 @@ export class FileDownloadComponent implements OnInit {
   async downloadFile(): Promise<void> {
     if (this.isDownloading()) return;
 
-    const fileName = `report-${Date.now()}.txt`;
-    const content = `Generated at ${new Date().toISOString()}\nHello from Angular 18 + PrimeNG 18!`;
 
     // 1. مرورگرهای غیر کرومی (مثل فایرفاکس و سافاری)
     if (!('showDirectoryPicker' in window)) {
@@ -87,7 +88,7 @@ export class FileDownloadComponent implements OnInit {
         life: 6000
       });
 
-      this.fallbackDownload(content, fileName);
+      this.fallbackDownload(this.content, this.fileName);
 
       this.isDownloading.set(false);
       return;
@@ -98,7 +99,10 @@ export class FileDownloadComponent implements OnInit {
 
     if (!dirHandle) {
       dirHandle = await this.selectDirectory();
-      if (!dirHandle) return;
+      if (!dirHandle) {
+        this.fallbackDownload(this.content, this.fileName);
+        return;
+      }
     }
 
     const hasPermission = await this.verifyPermission(dirHandle);
@@ -114,15 +118,15 @@ export class FileDownloadComponent implements OnInit {
 
     this.isDownloading.set(true);
     try {
-      const fileHandle = await dirHandle.getFileHandle(fileName, {create: true});
+      const fileHandle = await dirHandle.getFileHandle(this.fileName, {create: true});
       const writable = await fileHandle.createWritable();
-      await writable.write(content);
+      await writable.write(this.content);
       await writable.close();
 
       this.messageService.add({
         severity: 'success',
         summary: 'دانلود شد',
-        detail: `فایل ${fileName} در پوشه ${dirHandle.name} ذخیره شد.`
+        detail: `فایل ${this.fileName} در پوشه ${dirHandle.name} ذخیره شد.`
       });
     } catch (err: any) {
       this.messageService.add({
