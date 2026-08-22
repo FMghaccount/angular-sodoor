@@ -294,44 +294,4 @@ export class TableEditComponent implements OnInit {
         return [];
     }
   }
-
-  // --- ACCURATE DATE PARSER ---
-  private parseExcelDate(val: any): Date {
-    if (val === null || val === undefined || val === '') return new Date();
-
-    // 1. If it is an Excel Serial Number (e.g., 36321)
-    if (typeof val === 'number') {
-      // Formula to calculate exact UTC date without local timezone offset
-      const utcDays = Math.floor(val - 25569);
-      const utcValue = utcDays * 86400 * 1000;
-      const dateObj = new Date(utcValue);
-
-      // Construct local date using UTC components (year, month, day)
-      return new Date(dateObj.getUTCFullYear(), dateObj.getUTCMonth(), dateObj.getUTCDate());
-    }
-
-    // 2. If it is already a JS Date object
-    if (val instanceof Date) {
-      return new Date(val.getUTCFullYear(), val.getUTCMonth(), val.getUTCDate());
-    }
-
-    // 3. If it is a string (ISO date, GMT string, or Jalali format)
-    if (typeof val === 'string') {
-      const trimmed = val.trim();
-
-      // Handle Jalali dates (e.g. "1378/03/20")
-      if (trimmed.startsWith('13') || trimmed.startsWith('14')) {
-        return moment(trimmed, ['jYYYY/jMM/jDD', 'jYYYY-jMM-jDD']).toDate();
-      }
-
-      // Handle ISO/GMT strings by reading UTC dates
-      const parsed = new Date(trimmed);
-      if (!isNaN(parsed.getTime())) {
-        // Extract UTC parts to eliminate local timezone offset shift
-        return new Date(parsed.getUTCFullYear(), parsed.getUTCMonth(), parsed.getUTCDate());
-      }
-    }
-
-    return new Date();
-  }
 }
