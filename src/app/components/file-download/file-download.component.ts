@@ -65,8 +65,7 @@ export class FileDownloadComponent implements OnInit {
         this.messageService.add({
           severity: 'warn',
           summary: 'خطا',
-          // detail: err?.message ?? 'امکان انتخاب پوشه وجود ندارد.فایل در مسیر پیشفرض مرورگر ذخیره می شود'
-          detail: 'امکان انتخاب پوشه وجود ندارد.فایل در مسیر پیشفرض مرورگر ذخیره می شود'
+          detail: err?.message ?? 'امکان انتخاب پوشه وجود ندارد.'
         });
       }
       return null;
@@ -75,7 +74,6 @@ export class FileDownloadComponent implements OnInit {
 
   async downloadFile(): Promise<void> {
     if (this.isDownloading()) return;
-
 
     // 1. مرورگرهای غیر کرومی (مثل فایرفاکس و سافاری)
     if (!('showDirectoryPicker' in window)) {
@@ -99,10 +97,7 @@ export class FileDownloadComponent implements OnInit {
 
     if (!dirHandle) {
       dirHandle = await this.selectDirectory();
-      if (!dirHandle) {
-        this.fallbackDownload(this.content, this.fileName);
-        return;
-      }
+      if (!dirHandle) return;
     }
 
     const hasPermission = await this.verifyPermission(dirHandle);

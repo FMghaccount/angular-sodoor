@@ -253,21 +253,45 @@ export class TableEditComponent implements OnInit {
       this.parentForm.markAllAsTouched();
     }
 
-    const exportedTableData = this.products.map((item) => ({
-      ...item,
-      birthDateJalali: this.formatJalali(item.birthDate)
-    }));
-
     // Array output containing parent form data and table array
-    const resultPayload = {
-      parent: this.parentForm.value,
-      data: exportedTableData
+    this.loading = true; // Block UI locally without freezing browser thread
+
+    // Instantiate Web Worker
+    const worker = new Worker(
+      new URL('./excel-log.worker.ts', import.meta.url),
+      { type: 'module' }
+    );
+
+    // Receive processed results back from Worker
+    worker.onmessage = ({ data }) => {
+      this.loading = false;
+
+      if (data.success) {
+        const resultPayload = {
+          parent: this.parentForm.value,
+          data: data.tableRows
+        };
+        console.log('Final Payload Output:', resultPayload);
+        this.parentForm.reset();
+        this.addRowForm.reset();
+        if (this.editForm) this.editForm.reset();
+        this.products = []
+      } else {
+        console.error('Error parsing file:', data.error);
+      }// Reset input element
+      worker.terminate(); // Clean up worker instance
     };
-    this.parentForm.reset();
-    this.addRowForm.reset();
-    if (this.editForm) this.editForm.reset();
-    this.products = []
-    console.log('Final Payload Output:', resultPayload);
+
+    worker.onerror = (err) => {
+      this.loading = false;
+      console.error('Worker error:', err);
+      worker.terminate();
+    };
+
+    // Pass file and mapping metadata to background thread
+    worker.postMessage({
+      tableData: this.products
+    });
   }
 
   formatJalali(date: Date): string {
